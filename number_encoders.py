@@ -5,8 +5,22 @@ class unary:
 
 	def encode(number):
 		ret = []
+		i = 0
 		while (i<=number):
 			ret.append(0)
+			i+=1
+		return ret
+
+	def decode(output):
+		ret = None
+		for char in output:
+			if str(char)=="0":
+				if ret==None:
+					ret = 0
+				else:
+					ret+=1
+			else:
+				break
 		return ret
 
 class binary:
@@ -15,7 +29,7 @@ class binary:
 		return [0, 1]
 
 	def encode(number):
-		return list(bin(number)[2:])
+		return list(map(int, list(bin(number)[2:])))
 
 class ternary:
 

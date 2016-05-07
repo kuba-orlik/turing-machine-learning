@@ -1,9 +1,9 @@
 from weightedset import WeightedRandomSetWithReplacement
 import random
 
-sexual_reproduction_percent = 20
-asexual_reproduction_percent = 10
-max_mutation_strength = 3
+sexual_reproduction_percent = 50
+asexual_reproduction_percent = 50
+max_mutation_strength = 100
 
 class Population:
 
@@ -11,41 +11,58 @@ class Population:
 		self.generator = generator
 		self.size = size
 		self.fitness_function = fitness_function
-		self.instances = []
+		self.population = WeightedRandomSetWithReplacement(fitness_function)
 		self.populate()
 
-	def populate(self):
-		for i in range(self.size):
-			self.instances.append(self.generator())
-
-	def weigh_population(self):
-		s = WeightedRandomSetWithReplacement()
-		for instance in self.instances:
-			s.add(instance, self.fitness_function(instance))
-		return s
+	def populate(self, amount=None):
+		if(amount==None):
+			amount = self.size
+		print("\tpopulating...")
+		while len(self.population) < self.size:
+			instance = self.generator()
+			self.population.add(instance)
+			print (len(self.population), "/", self.size)
 
 	def generations(self, iterations=1):
 		for i in range(iterations):
+			print("generation", i, "population", len(self.population))
+			print("\tbest rank:", self.fitness_function(self.population[0]))
 			self.generation()
 
-	def generation(self):
-		s = self.weigh_population()
+	def mutate(self):
+		print("\tmutating...")
+		to_add = []
+		for i in range(int(len(self.population) * asexual_reproduction_percent / 100)):
+			instance = self.population.draw()
+			for i in range(1, random.randint(1, max_mutation_strength)):
+				mutant = instance.mutate()
+				if mutant not in self.population:
+					to_add.append(mutant)
+		print("\tadding", str(len(to_add)), "mutated instances to population...")
+		for instance in to_add:
+			self.population.add(instance)
 
+	def cross(self):
 		to_add = []
 
-		for i in range(int(len(s) * sexual_reproduction_percent / 100)):
-			mate1 = s.draw()
-			mate2 = s.draw()
+		print("\tcrossing...")
+		for i in range(int(len(self.population) * sexual_reproduction_percent / 100)):
+			mate1 = self.population.draw()
+			mate2 = self.population.draw()
 			kid = mate1 * mate2
-			to_add.append(kid)
-
-		for i in range(int(len(s) * asexual_reproduction_percent / 100)):
-			instance = s.draw()
-			for i in range(1, random.randint(1, max_mutation_strength)):
-				instance = instance.mutate()
-			to_add.append(instance)
-
+			if kid not in self.population:
+				to_add.append(kid)
+		print("\tadding", str(len(to_add)), "crossed items to population...")
 		for instance in to_add:
-			s.add(instance, self.fitness_function(instance))
+			self.population.add(instance)
 
-		new_population = s._members[-self.size:]
+	def generation(self):
+		if random.randint(1,2) == 1:
+			self.mutate()
+			self.cross()
+		else:
+			self.cross()
+			self.mutate()
+
+		print("\tkilling inefficient ones...")
+		self.population.trim(self.size)

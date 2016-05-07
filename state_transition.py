@@ -1,4 +1,5 @@
 import random
+import copy
 
 r = random.choice
 
@@ -14,7 +15,13 @@ class StateTransition:
 		self.fix_holes()
 
 	def __getitem__(self, index):
+		if not index in self.dic:
+			raise ValueError("Bad key value: " + str(index))
 		return self.dic[index]
+
+	def copy(self):
+		twin = StateTransition(copy.deepcopy(self.states), copy.copy(self.alphabet), self.dic.copy())
+		return twin
 
 	def __contains__(self, index):
 		return index in self.dic
@@ -29,7 +36,7 @@ class StateTransition:
 		if(rr == 0):
 			t = (r(self.states), t[1], t[2])
 		elif(rr == 1):
-			t = (t[0], r(self.alphabet), t[1])
+			t = (t[0], r(self.alphabet), t[2])
 		else:
 			t= (t[0], t[1], r(["R", "L"]))
 		self.dic[coords] = t
@@ -45,6 +52,14 @@ class StateTransition:
 				key = (state, char)
 				if not (key in self.dic):
 					self.dic[key] = self.random_transition()
+				else:
+					value = self.dic[key]
+					if not value[0] in self.states:
+						value = (r(self.states), value[1], value[2])
+					if not value[1] in self.alphabet:
+						value = (value[0], r(self.alphabet), value[2])
+					self.dic[key] = value
+
 
 	def cleanup(self):
 		keys = list(self.dic.keys())
@@ -90,12 +105,12 @@ class StateTransition:
 		# dics can contain unnecessary keys
 
 		for key in keys:
-			rr = random.randint(1, 3)
+			rr = random.randint(1, 2)
 			if rr==1:
 				new_dic[key] = self.dic[key]
 			else:
 				new_dic[key] = other.dic[key]
-		return StateTransition(self.states, self.alphabet, new_dic)
+		return StateTransition(copy.copy(self.states), copy.copy(self.alphabet), new_dic)
 
 	def hash(self):
 		ret = ""

@@ -23,12 +23,14 @@ class TuringMachine:
 
 	def reset(self):
 		self.state = self.initial_state
+		self.tape = []
 
 	def input(self, char_array):
 		self.reset()
 		for char in char_array:
 			if(not char in self.in_alphabet):
-				raise ValueError('Fed input character not in in_alphabet')
+				print(self.in_alphabet)
+				raise ValueError('Fed input character not in in_alphabet: ' + char)
 		# self.tape = [EmptyChar] + char_array
 		self.tape = char_array
 
@@ -52,7 +54,7 @@ class TuringMachine:
 
 	def move(self, direction):
 		if(not direction in ["R", "L"]):
-			raise ValueError("Move direction should be either 'R' or 'L'")
+			raise ValueError("Move direction should be either 'R' or 'L', cannot be: " + str(direction) + ".")
 		if(self.tape_position >= len(self.tape)):
 			self.tape.append(EmptyChar)
 		if(direction == "R"):
