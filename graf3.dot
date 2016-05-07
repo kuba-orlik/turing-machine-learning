@@ -1,0 +1,40 @@
+digraph {
+{
+	10[fillcolor=green style=filled label="accept" group="flow"];
+	11[fillcolor="#ff8888" style=filled label="reject" group="flow"];
+	0[shape="box" group="flow"];
+	start[shape=plaintext label="start" group="flow"];
+}
+{rank=same 10 11}
+start -> 0;
+0 -> 37[label="0→⊔,L"];
+0 -> 45[label="A→⊔,R"];
+0 -> 53[label="⊔→A,L"];
+1 -> 44[label="0→⊔,R"];
+1 -> 16[label="A→A,R"];
+1 -> 45[label="⊔→0,L"];
+2 -> 3[label="0→A,R"];
+2 -> 10[label="A→A,R"];
+2 -> 9[label="⊔→⊔,R"];
+3 -> 77[label="0→A,R"];
+3 -> 18[label="A→⊔,R"];
+3 -> 35[label="⊔→⊔,R"];
+4 -> 11[label="0→⊔,R"];
+4 -> 3[label="A→A,L"];
+4 -> 64[label="⊔→A,L"];
+5 -> 37[label="0→0,R"];
+5 -> 20[label="A→⊔,R"];
+5 -> 76[label="⊔→⊔,R"];
+6 -> 10[label="0→⊔,R"];
+6 -> 73[label="A→0,R"];
+6 -> 11[label="⊔→⊔,L"];
+7 -> 29[label="0→A,R"];
+7 -> 1[label="A→⊔,R"];
+7 -> 0[label="⊔→A,L"];
+8 -> 34[label="0→A,L"];
+8 -> 68[label="A→A,R"];
+8 -> 12[label="⊔→⊔,L"];
+9 -> 67[label="0→A,R"];
+9 -> 11[label="A→A,L"];
+9 -> 50[label="⊔→⊔,L"];
+}
