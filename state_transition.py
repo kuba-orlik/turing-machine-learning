@@ -9,15 +9,9 @@ class StateTransition:
 
 		if dic==None:
 			self.dic = {}
-			i = 0
-			while i < len(states):
-				j = 0
-				while j < len(alphabet):
-					self.dic[(self.states[i], self.alphabet[j])] = self.random_transition()
-					j += 1
-				i += 1
 		else:
 			self.dic = dic
+		self.fix_holes()
 
 	def __getitem__(self, index):
 		return self.dic[index]
@@ -41,19 +35,16 @@ class StateTransition:
 		self.dic[coords] = t
 
 	def update_states(self, new_states):
-
-		states_to_add = []
-		for state in new_states:
-			if not state in self.states:
-				states_to_add.append(state)
-
 		self.states = new_states
-		for state in states_to_add:
-			for char in self.alphabet:
-				if not (state, char) in self.dic:
-					self.dic[(state, char)] = self.random_transition()
-
+		self.fix_holes()
 		self.cleanup()
+
+	def fix_holes(self):
+		for state in self.states:
+			for char in self.alphabet:
+				key = (state, char)
+				if not (key in self.dic):
+					self.dic[key] = self.random_transition()
 
 	def cleanup(self):
 		keys = list(self.dic.keys())
@@ -62,19 +53,8 @@ class StateTransition:
 				del self.dic[key]
 
 	def update_alphabet(self, new_alphabet):
-
-		chars_to_add = []
-		for char in new_alphabet:
-			if not char in self.alphabet:
-				chars_to_add.append(char)
-
 		self.alphabet = new_alphabet
-
-		for char in chars_to_add:
-			for state in self.states:
-				if not ((state, char) in self.dic):
-					self.dic[(state, char)] = self.random_transition()
-
+		self.fix_holes()
 		self.cleanup()
 
 	def rename_state(self, prev_state, new_state):
@@ -93,6 +73,7 @@ class StateTransition:
 
 			del self.dic[key]
 			self.dic[new_key] = new_val
+		self.fix_holes()
 
 	def __mul__(self, other):
 		if not self.alphabet == other.alphabet:
